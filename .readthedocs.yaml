@@ -1,0 +1,18 @@
+version: 2
+formats:
+  - epub
+  - pdf
+python:
+  install:
+    - method: pip
+      path: .
+      extra_requirements:
+        - doc
+        - plots
+build:
+  os: ubuntu-24.04
+  tools:
+    python: "3.10"
+sphinx:
+  configuration: doc/src/conf.py
+
