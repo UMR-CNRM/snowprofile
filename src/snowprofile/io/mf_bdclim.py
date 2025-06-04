@@ -52,7 +52,7 @@ def read_mf_bdclim(numposte, date, db_config={}):
 
     # Process data
     from snowprofile import SnowProfile
-    from snowprofile.profiles import DensityProfile, Stratigraphy, HardnessProfile, TemperatureProfile
+    from snowprofile.profiles import DensityProfile, Stratigraphy, HardnessProfile, TemperatureProfile, LWCProfile
     from snowprofile.classes import Location, Weather, Time
 
     loc = Location(
@@ -84,7 +84,17 @@ def read_mf_bdclim(numposte, date, db_config={}):
     else:
         d = []
 
-    # TODO: Faire qqch de mesure LWC et cisso ?  <27-01-25, Léo Viallon-Galinier> #
+    # LWC
+    lwc_v = [p[9] for p in profil]
+    if len(set(lwc_v)) > 0 and set(lwc_v) != set([None, ]):
+        lwc = [LWCProfile(data={
+            'top_height': [p[0] for i, p in enumerate(profil) if lwc_v[i] is not None],
+            'thickness': [p[1] for i, p in enumerate(profil) if lwc_v[i] is not None],
+            'lwc': [p[9] for i, p in enumerate(profil) if lwc_v[i] is not None]}), ]
+    else:
+        lwc = []
+
+    # TODO: Faire qqch de mesure cisso ?  <27-01-25, Léo Viallon-Galinier> #
 
     # RAM Profile
     if len(profil_ram) > 0:
@@ -121,7 +131,8 @@ def read_mf_bdclim(numposte, date, db_config={}):
         stratigraphy_profile=s,
         density_profiles=d,
         hardness_profiles=r,
-        temperature_profiles=t)
+        temperature_profiles=t,
+        lwc_profiles=lwc)
 
     return sp
 

@@ -82,8 +82,8 @@ def plot_simple(sp,
     # LWC (red)
     if len(sp.lwc_profiles) > 0 and lwc_profiles is not None:
         ax = twinax1()
-        plot_utils.plot_step_profile(ax, sp.lwc_profiles, 'lwc', lwc_profiles, xlabel = 'Liquid water content (%)',
-                                     color='r')
+        plot_utils.plot_vline_profile(ax, sp.lwc_profiles, 'lwc', lwc_profiles, xlabel = 'Liquid water content (%)',
+                                      color='r')
         ax.xaxis.label.set_color('r')
         ax.set_xlim(10, 0)
 
