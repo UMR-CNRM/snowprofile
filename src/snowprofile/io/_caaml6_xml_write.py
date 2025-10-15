@@ -384,126 +384,138 @@ def write_caaml6_xml(snowprofile, filename, version='6.0.5', indent=False):
     _ = ET.SubElement(e_surf, f'{ns}metaData')
     e_surf_comment = ET.SubElement(_, f'{ns}comment')
 
-    _ = ET.SubElement(e_surf, f'{ns}surfFeatures')
-    e_surff = ET.SubElement(_, f'{ns}Components')
-    _ = ET.SubElement(e_surff, f'{ns}surfRoughness')
-    if s_surf.surface_roughness is not None:
-        _.text = s_surf.surface_roughness
-    else:
-        _.text = 'unknown'
-    if s_surf.surface_wind_features is not None:
-        if version >= "6.0.6":
-            _ = ET.SubElement(e_surff, f'{ns}surfWindFeatures')
-            _.text = s_surf.surface_wind_features
+    if not (s_surf.surface_roughness is None
+            and s_surf.surface_wind_features is None
+            and s_surf.surface_melt_rain_features is None
+            and s_surf.surface_features_amplitude is None
+            and s_surf.surface_features_amplitude_min is None
+            and s_surf.surface_features_amplitude_max is None
+            and s_surf.surface_features_wavelength is None
+            and s_surf.surface_features_wavelength_min is None
+            and s_surf.surface_features_wavelength_max is None
+            and s_surf.surface_features_aspect is None
+            and s_surf.surface_temperature is None
+            and s_surf.surface_albedo is None
+            and s_surf.spectral_albedo is None):
+        _ = ET.SubElement(e_surf, f'{ns}surfFeatures')
+        e_surff = ET.SubElement(_, f'{ns}Components')
+        _ = ET.SubElement(e_surff, f'{ns}surfRoughness')
+        if s_surf.surface_roughness is not None:
+            _.text = s_surf.surface_roughness
         else:
-            comment += f'Wind surface features: {s_surf.surface_wind_features}\n'
-    if s_surf.surface_melt_rain_features is not None:
-        if version >= "6.0.6":
-            _ = ET.SubElement(e_surff, f'{ns}surfMeltRainFeatures')
-            _.text = s_surf.surface_melt_rain_features
-        else:
-            comment += f'Melt and rain surface features: {s_surf.surface_melt_rain_features}\n'
-
-    if s_surf.surface_features_amplitude is not None:
-        if s_surf.surface_features_amplitude_min is not None or s_surf.surface_features_amplitude_max is not None:
-            logging.warning('CAAML6 could not store both surface_feature amplitude and min/max of amplitude.')
-        _ = ET.SubElement(e_surff, f'{ns}validAmplitude')
-        _ = ET.SubElement(_, f'{ns}AmplitudePosition', attrib={'uom': 'cm'})
-        _ = ET.SubElement(_, f'{ns}position')
-        _.text = "{:.12g}".format(s_surf.surface_features_amplitude * 100)
-    elif s_surf.surface_features_amplitude_min is not None and s_surf.surface_features_amplitude_max is not None:
-        _ = ET.SubElement(e_surff, f'{ns}validAmplitude')
-        _r = ET.SubElement(_, f'{ns}AmplitudeRange', attrib={'uom': 'cm'})
-        _ = ET.SubElement(_r, f'{ns}beginPosition')
-        _.text = "{:.12g}".format(s_surf.surface_features_amplitude_min * 100)
-        _ = ET.SubElement(_r, f'{ns}endPosition')
-        _.text = "{:.12g}".format(s_surf.surface_features_amplitude_max * 100)
-
-    if s_surf.surface_features_wavelength is not None:
-        if s_surf.surface_features_wavelength_min is not None or s_surf.surface_features_wavelength_max is not None:
-            logging.warning('CAAML6 could not store both surface_feature wavelength and min/max of wavelength.')
-        _ = ET.SubElement(e_surff, f'{ns}validWavelength')
-        _ = ET.SubElement(_, f'{ns}WavelengthPosition', attrib={'uom': 'm'})
-        _ = ET.SubElement(_, f'{ns}position')
-        _.text = "{:.12g}".format(s_surf.surface_features_wavelength)
-    elif s_surf.surface_features_wavelength_min is not None and s_surf.surface_features_wavelength_max is not None:
-        _ = ET.SubElement(e_surff, f'{ns}validWavelength')
-        _r = ET.SubElement(_, f'{ns}WavelengthRange', attrib={'uom': 'm'})
-        _ = ET.SubElement(_r, f'{ns}beginPosition')
-        _.text = "{:.12g}".format(s_surf.surface_features_wavelength_min)
-        _ = ET.SubElement(_r, f'{ns}endPosition')
-        _.text = "{:.12g}".format(s_surf.surface_features_wavelength_max)
-
-    if s_surf.surface_features_aspect is not None:
-        _ = ET.SubElement(e_surff, f'{ns}validAspect')
-        _ = ET.SubElement(_, f'{ns}AspectPosition')
-        _ = ET.SubElement(_, f'{ns}position')
-        _.text = str(int(s_surf.surface_features_aspect))
-
-    if version >= "6.0.6":
-        _ = ET.SubElement(e_surff, f'{ns}lapPresence')
-        if s_surf.lap_presence is None:
             _.text = 'unknown'
+        if s_surf.surface_wind_features is not None:
+            if version >= "6.0.6":
+                _ = ET.SubElement(e_surff, f'{ns}surfWindFeatures')
+                _.text = s_surf.surface_wind_features
+            else:
+                comment += f'Wind surface features: {s_surf.surface_wind_features}\n'
+        if s_surf.surface_melt_rain_features is not None:
+            if version >= "6.0.6":
+                _ = ET.SubElement(e_surff, f'{ns}surfMeltRainFeatures')
+                _.text = s_surf.surface_melt_rain_features
+            else:
+                comment += f'Melt and rain surface features: {s_surf.surface_melt_rain_features}\n'
+
+        if s_surf.surface_features_amplitude is not None:
+            if s_surf.surface_features_amplitude_min is not None or s_surf.surface_features_amplitude_max is not None:
+                logging.warning('CAAML6 could not store both surface_feature amplitude and min/max of amplitude.')
+            _ = ET.SubElement(e_surff, f'{ns}validAmplitude')
+            _ = ET.SubElement(_, f'{ns}AmplitudePosition', attrib={'uom': 'cm'})
+            _ = ET.SubElement(_, f'{ns}position')
+            _.text = "{:.12g}".format(s_surf.surface_features_amplitude * 100)
+        elif s_surf.surface_features_amplitude_min is not None and s_surf.surface_features_amplitude_max is not None:
+            _ = ET.SubElement(e_surff, f'{ns}validAmplitude')
+            _r = ET.SubElement(_, f'{ns}AmplitudeRange', attrib={'uom': 'cm'})
+            _ = ET.SubElement(_r, f'{ns}beginPosition')
+            _.text = "{:.12g}".format(s_surf.surface_features_amplitude_min * 100)
+            _ = ET.SubElement(_r, f'{ns}endPosition')
+            _.text = "{:.12g}".format(s_surf.surface_features_amplitude_max * 100)
+
+        if s_surf.surface_features_wavelength is not None:
+            if s_surf.surface_features_wavelength_min is not None or s_surf.surface_features_wavelength_max is not None:
+                logging.warning('CAAML6 could not store both surface_feature wavelength and min/max of wavelength.')
+            _ = ET.SubElement(e_surff, f'{ns}validWavelength')
+            _ = ET.SubElement(_, f'{ns}WavelengthPosition', attrib={'uom': 'm'})
+            _ = ET.SubElement(_, f'{ns}position')
+            _.text = "{:.12g}".format(s_surf.surface_features_wavelength)
+        elif s_surf.surface_features_wavelength_min is not None and s_surf.surface_features_wavelength_max is not None:
+            _ = ET.SubElement(e_surff, f'{ns}validWavelength')
+            _r = ET.SubElement(_, f'{ns}WavelengthRange', attrib={'uom': 'm'})
+            _ = ET.SubElement(_r, f'{ns}beginPosition')
+            _.text = "{:.12g}".format(s_surf.surface_features_wavelength_min)
+            _ = ET.SubElement(_r, f'{ns}endPosition')
+            _.text = "{:.12g}".format(s_surf.surface_features_wavelength_max)
+
+        if s_surf.surface_features_aspect is not None:
+            _ = ET.SubElement(e_surff, f'{ns}validAspect')
+            _ = ET.SubElement(_, f'{ns}AspectPosition')
+            _ = ET.SubElement(_, f'{ns}position')
+            _.text = str(int(s_surf.surface_features_aspect))
+
+        if version >= "6.0.6":
+            _ = ET.SubElement(e_surff, f'{ns}lapPresence')
+            if s_surf.lap_presence is None:
+                _.text = 'unknown'
+            else:
+                _.text = s_surf.lap_presence
+
+            if s_surf.surface_temperature is not None:
+                _surftemp = ET.SubElement(e_surff, f'{ns}surfTemp')
+                if s_surf.surface_temperature_measurement_method is not None:
+                    _ = ET.SubElement(_surftemp, f'{ns}methodOfMeas')
+                    _.text = s_surf.surface_temperature_measurement_method
+                _ = ET.SubElement(_surftemp, f'{ns}data', attrib={'uom': 'degC'})
+                _.text = str(s_surf.surface_temperature)
         else:
-            _.text = s_surf.lap_presence
-
-        if s_surf.surface_temperature is not None:
-            _surftemp = ET.SubElement(e_surff, f'{ns}surfTemp')
+            if s_surf.lap_presence is not None:
+                comment += f'LAP presence: {s_surf.lap_presence}\n'
+            if s_surf.surface_temperature is not None:
+                comment += f'Surface temperature: {s_surf.surface_temperature}\n'
             if s_surf.surface_temperature_measurement_method is not None:
-                _ = ET.SubElement(_surftemp, f'{ns}methodOfMeas')
-                _.text = s_surf.surface_temperature_measurement_method
-            _ = ET.SubElement(_surftemp, f'{ns}data', attrib={'uom': 'degC'})
-            _.text = str(s_surf.surface_temperature)
-    else:
-        if s_surf.lap_presence is not None:
-            comment += f'LAP presence: {s_surf.lap_presence}\n'
-        if s_surf.surface_temperature is not None:
-            comment += f'Surface temperature: {s_surf.surface_temperature}\n'
-        if s_surf.surface_temperature_measurement_method is not None:
-            comment += f'Surface temperature measurement method: {s_surf.surface_temperature_measurement_method}\n'
+                comment += f'Surface temperature measurement method: {s_surf.surface_temperature_measurement_method}\n'
 
-    if (s_surf.surface_albedo is not None or s_surf.spectral_albedo is not None) and version >= '6.0.6':
-        e_albedo = ET.SubElement(e_surff, f'{ns}surfAlbedo')
-        if s_surf.surface_albedo is not None:
-            e_albedo_broadband = ET.SubElement(e_albedo, f'{ns}albedo')
-            _ = ET.SubElement(e_albedo_broadband, f'{ns}albedoMeasurement')
-            _.text = "{:.12g}".format(s_surf.surface_albedo)
-            if s_surf.surface_albedo_comment is not None:
-                _ = ET.SubElement(e_albedo_broadband, f'{ns}metaData')
-                _ = ET.SubElement(_, f'{ns}comment')
-                _.text = s_surf.surface_albedo_comment
-        if s_surf.spectral_albedo is not None:
-            e_albedo_spectral = ET.SubElement(e_albedo, f'{ns}spectralAlbedo')
-            logging.warning('Spectral albedo not yet implemented for CAAML6 output')
-            for _, dataline in s_surf.spectral_albedo.data.iterrows():
-                e_sam = ET.SubElement(e_albedo_spectral, f'{ns}spectralAlbedoMeasurement')
+        if (s_surf.surface_albedo is not None or s_surf.spectral_albedo is not None) and version >= '6.0.6':
+            e_albedo = ET.SubElement(e_surff, f'{ns}surfAlbedo')
+            if s_surf.surface_albedo is not None:
+                e_albedo_broadband = ET.SubElement(e_albedo, f'{ns}albedo')
+                _ = ET.SubElement(e_albedo_broadband, f'{ns}albedoMeasurement')
+                _.text = "{:.12g}".format(s_surf.surface_albedo)
+                if s_surf.surface_albedo_comment is not None:
+                    _ = ET.SubElement(e_albedo_broadband, f'{ns}metaData')
+                    _ = ET.SubElement(_, f'{ns}comment')
+                    _.text = s_surf.surface_albedo_comment
+            if s_surf.spectral_albedo is not None:
+                e_albedo_spectral = ET.SubElement(e_albedo, f'{ns}spectralAlbedo')
+                logging.warning('Spectral albedo not yet implemented for CAAML6 output')
+                for _, dataline in s_surf.spectral_albedo.data.iterrows():
+                    e_sam = ET.SubElement(e_albedo_spectral, f'{ns}spectralAlbedoMeasurement')
 
-                _ = ET.SubElement(e_sam, f'{ns}minWaveLength', attrib={'uom': 'nm'})
-                _.text = "{:.12g}".format(dataline.min_wavelength)
+                    _ = ET.SubElement(e_sam, f'{ns}minWaveLength', attrib={'uom': 'nm'})
+                    _.text = "{:.12g}".format(dataline.min_wavelength)
 
-                _ = ET.SubElement(e_sam, f'{ns}maxWaveLength', attrib={'uom': 'nm'})
-                _.text = "{:.12g}".format(dataline.max_wavelength)
+                    _ = ET.SubElement(e_sam, f'{ns}maxWaveLength', attrib={'uom': 'nm'})
+                    _.text = "{:.12g}".format(dataline.max_wavelength)
 
-                attrib = {}
-                if 'uncertainty' in dataline and not np.isnan(dataline.uncertainty) and version >= '6.0.6':
-                    attrib['uncertainty'] = "{:.12g}".format(dataline.uncertainty)
-                if 'quality' in dataline and dataline.quality is not None and version >= '6.0.6':
-                    attrib['quality'] = dataline.quality
-                _ = ET.SubElement(e_sam, f'{ns}albedo', attrib=attrib)
-                _.text = "{:.12g}".format(dataline.albedo)
+                    attrib = {}
+                    if 'uncertainty' in dataline and not np.isnan(dataline.uncertainty) and version >= '6.0.6':
+                        attrib['uncertainty'] = "{:.12g}".format(dataline.uncertainty)
+                    if 'quality' in dataline and dataline.quality is not None and version >= '6.0.6':
+                        attrib['quality'] = dataline.quality
+                    _ = ET.SubElement(e_sam, f'{ns}albedo', attrib=attrib)
+                    _.text = "{:.12g}".format(dataline.albedo)
 
-            if s_surf.spectral_albedo.comment is not None:
-                _ = ET.SubElement(e_albedo_spectral, f'{ns}metaData')
-                _ = ET.SubElement(_, f'{ns}comment')
-                _.text = s_surf.spectral_albedo.comment
+                if s_surf.spectral_albedo.comment is not None:
+                    _ = ET.SubElement(e_albedo_spectral, f'{ns}metaData')
+                    _ = ET.SubElement(_, f'{ns}comment')
+                    _.text = s_surf.spectral_albedo.comment
 
-
-    if s_surf.comment is not None or len(comment) > 0:
-        if s_surf.comment is not None and len(comment) == 0:
-            comment = s_surf.comment
-        elif s_surf.comment is not None:
-            comment = s_surf.comment + "\n\n" + comment
-        e_surf_comment.text = comment
+        if s_surf.comment is not None or len(comment) > 0:
+            if s_surf.comment is not None and len(comment) == 0:
+                comment = s_surf.comment
+            elif s_surf.comment is not None:
+                comment = s_surf.comment + "\n\n" + comment
+            e_surf_comment.text = comment
 
     if s_surf.penetration_ram is not None:
         _ = ET.SubElement(e_surf, f'{ns}penetrationRam', attrib={'uom': 'cm'})
@@ -657,7 +669,10 @@ def _gen_common_metadata(e, s, config={}, additional_metadata = [], name='metaDa
 
         # None values
         if value is None:
-            continue
+            if 'default_value' in elem and elem['default_value'] is not None:
+                value = elem['default_value']
+            else:
+                continue
 
         # Check version
         if 'min_version' in elem and elem['min_version'] > config['version']:
@@ -723,7 +738,7 @@ def _insert_stratigrpahy_profile(e_r, s_strat, config):
         if layer.grain_1 is not None and layer.grain_2 is not None:
             _ = ET.SubElement(e_layer, f'{ns}grainFormSecondary')
             _.text = layer.grain_2
-        if layer.grain_size is not None:
+        if layer.grain_size is not None and not np.isnan(layer.grain_size):
             _ = ET.SubElement(e_layer, f'{ns}grainSize', attrib={'uom': 'mm'})
             _c = ET.SubElement(_, f'{ns}Components')
             _ = ET.SubElement(_c, f'{ns}avg')

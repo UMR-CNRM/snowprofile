@@ -56,7 +56,7 @@ def read_mf_bdclim(numposte, date, db_config={}):
     from snowprofile.classes import Location, Weather, Time
 
     loc = Location(
-        id=str(numposte),
+        id=f'numposte{numposte}',
         name=f"{metadata_poste['name']} ({metadata_poste['name_detail']})",
         latitude=metadata_poste['lat'],
         longitude=metadata_poste['lon'],
@@ -77,10 +77,12 @@ def read_mf_bdclim(numposte, date, db_config={}):
     # Density profile
     d_v = [p[7] for p in profil]
     if len(set(d_v)) > 0 and set(d_v) != set([None, ]):
-        d = [DensityProfile(data={
-            'top_height': [p[0] for i, p in enumerate(profil) if d_v[i] is not None],
-            'thickness': [p[1] for i, p in enumerate(profil) if d_v[i] is not None],
-            'density': [p[7] for i, p in enumerate(profil) if d_v[i] is not None]}), ]
+        d = [DensityProfile(
+            method_of_measurement='Snow Cylinder',
+            data={
+                'top_height': [p[0] for i, p in enumerate(profil) if d_v[i] is not None],
+                'thickness': [p[1] for i, p in enumerate(profil) if d_v[i] is not None],
+                'density': [p[7] for i, p in enumerate(profil) if d_v[i] is not None]}), ]
     else:
         d = []
 
@@ -120,13 +122,14 @@ def read_mf_bdclim(numposte, date, db_config={}):
     time = Time(record_time=date)
 
     sp = SnowProfile(
-        id=f'{numposte}-{date.isoformat()}',
+        id=f'numposte{numposte}-{date.strftime("%Y%m%d%H%M")}',
         profile_comment=metadata['comment'],
         profile_depth=metadata['totdepth'],
         profile_swe=metadata['lwc'],
         location=loc,
         time=time,
-        weather=Weather(cloudiness=metadata['ww'], air_temperature=float(metadata['t'])),
+        weather=Weather(cloudiness=metadata['ww'],
+                        air_temperature=float(metadata['t']) if metadata['t'] is not None else None),
         observer=observer,
         stratigraphy_profile=s,
         density_profiles=d,
@@ -255,7 +258,7 @@ def _get_profil(conn, numposte, date):
             ep = line[11]
             g1 = _correspGrainForm[line[3]]
             g2 = _correspGrainForm[line[4]] if line[4] is not None else _correspGrainForm[line[3]]
-            diam = float(line[5]) if line[5] is not None else None
+            diam = float(line[5]) / 1e3 if line[5] is not None else None
             hardness = _correspHardness[line[6]] if line[6] in _correspHardness else None
             lwc = _correspLwc[line[7]] if line[7] in _correspLwc else None
             density = float(line[8]) if line[8] is not None else None
