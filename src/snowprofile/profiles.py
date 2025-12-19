@@ -71,7 +71,7 @@ class Stratigraphy(BaseProfile):
                      ),
         loc=dict(type='O',
                  optional=True,
-                 values=['no', 'top', 'bottom', 'all', 'true', 'false']),
+                 values=['no', 'top', 'bottom', 'all', 'true', 'false', None]),
         uncertainty=dict(optional=True,
                          nan_allowed=True),
         quality=dict(optional=True,
