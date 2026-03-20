@@ -86,3 +86,5 @@ grain_sizes = {'very fine': 0.1, 'fine': 0.35, 'medium': 0.75, 'coarse': 1.5,
                'very coarse': 3.5, 'extreme': 6}  # mm
 
 CT_scores = {'CTV': 0, 'CTE': 5, 'CTM': 14, 'CTH': 24}
+
+attribution_lwc = {'D': 0, 'D-M': 1, 'M': 1.5, 'M-W': 3, 'W': 5.5, 'W-V': 8, 'V': 11.5, 'V-S': 15, 'S': 20}
