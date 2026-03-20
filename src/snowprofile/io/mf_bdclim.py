@@ -49,6 +49,7 @@ def read_mf_bdclim(numposte, date, db_config={}):
         if not maxdepth == metadata['totdepth']:
             logging.error(f'Incompatbile maximum depth: {maxdepth}cm in the database and '
                           f"{metadata['totdepth']} in the data.")
+            metadata['totdepth'] = maxdepth
 
     # Process data
     from snowprofile import SnowProfile
@@ -256,6 +257,8 @@ def _get_profil(conn, numposte, date):
             topdepth = int(line[0])
             maxdepth = max(topdepth, maxdepth)
             ep = line[11]
+            if line[3] == -8:  # Special case for partial pit
+                continue
             g1 = _correspGrainForm[line[3]]
             g2 = _correspGrainForm[line[4]] if line[4] is not None else _correspGrainForm[line[3]]
             diam = float(line[5]) / 1e3 if line[5] is not None else None
@@ -264,6 +267,7 @@ def _get_profil(conn, numposte, date):
             density = float(line[8]) if line[8] is not None else None
             cisaillt = float(line[10]) if line[10] is not None else None
             lwc_m = float(line[9]) if line[9] is not None else None
+
 
             # ep processing
             # sometimes epaisseur_couche_strati is not defined...
