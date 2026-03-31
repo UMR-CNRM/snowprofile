@@ -30,6 +30,8 @@ class TestIOCAAML6XML(unittest.TestCase):
         assert len(sp.density_profiles) == 1
         assert len(sp.impurity_profiles) == 1
         assert sp.impurity_profiles[0].impurity_type == 'Black Carbon'
+        assert sp.location.latitude - 46.7911050 < 1e-6
+        assert sp.location.longitude - 9.7732374 < 1e-6
 
     def test_read_write_caaml6_xml_example2(self):
         """

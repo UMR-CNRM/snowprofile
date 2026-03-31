@@ -188,7 +188,7 @@ def write_caaml6_xml(snowprofile, filename, version='6.0.5', indent=False):
                                                        'srsName': "urn:ogc:def:crs:OGC:1.3:CRS84",
                                                        'srsDimension': "2"})
         _ = ET.SubElement(_, f'{ns_gml}pos')
-        _.text = f'{loc.latitude} {loc.longitude}'
+        _.text = f'{loc.longitude} {loc.latitude}'
     if loc.country is not None:
         _ = ET.SubElement(src, f'{ns}country')
         _.text = loc.country

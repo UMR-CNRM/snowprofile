@@ -4,6 +4,8 @@ import re
 import logging
 import xml.etree.ElementTree as ET
 
+import pyproj
+
 
 def _parse_str(root, path, clean=True, attribute=None, attribution_table=None):
     """
@@ -114,17 +116,29 @@ def _search_gml_id(element):
 
 
 def _parse_lat_lon(pointlocation):
+    """
+    Return a tuple latitude, longitude
+
+    NB: this is written the other side in the file as CRS84 is used.
+    """
     if pointlocation is None:
         return None, None
     for elem in pointlocation:
         r = re.match('{.*}Point$', elem.tag)
         if r is not None or elem.tag == 'Point':
+            srs = elem.attrib['srsName'] if 'srsName' in elem.attrib else None
+            if srs is None:
+                logging.warning('Could not determine SRS. We imagine CRS84 and will parse lon/lat accordingly.')
             for e in elem:
                 r = re.match('{.*}pos$', e.tag)
                 if r is not None or e.tag == 'pos':
                     try:
                         sp = e.text.strip().split()
-                        return float(sp[0]), float(sp[1])
+                        if srs is not None:
+                            t = pyproj.Transformer.from_crs(srs, 'EPSG:4326')
+                            return t.transform(*[float(x) for x in sp])
+                        else:  # Suppose CRS84 : lon/lat
+                            return float(sp[1]), float(sp[0])
                     except Exception:
                         logging.warning('Could not parse latitude/longitude')
 
