@@ -47,8 +47,8 @@ def read_mf_bdclim(numposte, date, db_config={}):
         metadata['totdepth'] = maxdepth
     else:
         if not maxdepth == metadata['totdepth']:
-            logging.error(f'Incompatbile maximum depth: {maxdepth}cm in the database and '
-                          f"{metadata['totdepth']} in the data.")
+            logging.error(f'Incompatbile maximum depth: {maxdepth * 100}cm in the database and '
+                          f"{metadata['totdepth'] * 100} in the data.")
             metadata['totdepth'] = maxdepth
 
     # Process data
@@ -346,10 +346,9 @@ def _get_metadata_obs(conn, numposte, date):
 
     ww = _correspWWSkyCond[data[1]] if data[1] is not None and data[1] in _correspWWSkyCond else None
     if ww is not None:
-        print(ww)
         ww = {'cloudiness': ww[0], 'precipitation': ww[1], 'snow_transport': ww[2]}
     else:
-        ww = {}
+        ww = {'cloudiness': None, 'precipitation': None, 'snow_transport': None}
 
     r = {'t': data[0],
          'totdepth': int(data[2]) / 100 if data[2] is not None else None,
@@ -469,5 +468,6 @@ _correspWWSkyCond = {  # cloudiness, precipitation, snow transport
     6: [None, 'RA', None],    # Pluie
     7: [None, 'SN', None],    # Neige
     9: [None, None, None],    # Orage
-    # -9 : Type de temps inconnu
+    -9: [None, None, None],   # type de temps inconnu
+    None: [None, None, None],   # type de temps inconnu
 }
