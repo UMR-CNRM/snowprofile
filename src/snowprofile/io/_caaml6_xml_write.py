@@ -733,6 +733,14 @@ def _insert_stratigrpahy_profile(e_r, s_strat, config):
     # Layer loop
     for _, layer in s_strat.data.iterrows():
         e_layer = ET.SubElement(e_s, f'{ns}Layer')
+        if ('comment' in layer and layer.comment is not None and len(layer.comment) > 0):
+            _md = ET.SubElement(e_layer, f'{ns}metaData')
+            _ = ET.SubElement(_md, f'{ns}comment')
+            _.text = str(layer.comment)
+        if 'additional_data' in layer and layer.additional_data is not None:
+            if _md is None:
+                _md = ET.SubElement(e_layer, f'{ns}metaData')
+                _append_additional_data(_md, layer.additional_data, ns=ns)
         _ = ET.SubElement(e_layer, f'{ns}depthTop', attrib={'uom': 'cm'})
         if profile_depth - layer.top_height < 0:
             raise ValueError(f'Top height ({layer.top_height}m) > profile depth ({profile_depth}m) '
@@ -765,14 +773,6 @@ def _insert_stratigrpahy_profile(e_r, s_strat, config):
             _ = ET.SubElement(e_layer, f'{ns}layerOfConcern')
             _.text = layer.loc
         _md = None
-        if ('comment' in layer and layer.comment is not None and len(layer.comment) > 0):
-            _md = ET.SubElement(e_layer, f'{ns}metaData')
-            _ = ET.SubElement(_md, f'{ns}comment')
-            _.text = str(layer.comment)
-        if 'additional_data' in layer and layer.additional_data is not None:
-            if _md is None:
-                _md = ET.SubElement(e_layer, f'{ns}metaData')
-                _append_additional_data(_md, layer.additional_data, ns=ns)
         if 'formation_time' in layer and layer.formation_time is not None:
             _ = ET.SubElement(e_layer, f'{ns}validFormationTime')
             _t = ET.SubElement(_, f'{ns}TimeInstant')
