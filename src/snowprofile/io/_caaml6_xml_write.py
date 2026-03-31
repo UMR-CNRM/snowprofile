@@ -530,7 +530,8 @@ def write_caaml6_xml(snowprofile, filename, version='6.0.5', indent=False):
     _append_additional_data(e_surf, s_surf.additional_data)
 
     # - Profiles
-    _insert_stratigrpahy_profile(e_r, snowprofile.stratigraphy_profile, config=config)
+    if snowprofile.stratigraphy_profile is not None and len(snowprofile.stratigraphy_profile.data) > 0:
+        _insert_stratigrpahy_profile(e_r, snowprofile.stratigraphy_profile, config=config)
 
     if version >= "6.0.6":
         for profile in snowprofile.temperature_profiles:
@@ -542,22 +543,28 @@ def write_caaml6_xml(snowprofile, filename, version='6.0.5', indent=False):
             _insert_temperature_profile(e_r, snowprofile.temperature_profiles[0], config=config)
 
     for profile in snowprofile.density_profiles:
-        _insert_density_profile(e_r, profile, config=config)
+        if len(profile.data) > 0:
+            _insert_density_profile(e_r, profile, config=config)
 
     for profile in snowprofile.lwc_profiles:
-        _insert_lwc_profile(e_r, profile, config=config)
+        if len(profile.data) > 0:
+            _insert_lwc_profile(e_r, profile, config=config)
 
     for profile in snowprofile.ssa_profiles:
-        _insert_ssa_profile(e_r, profile, config=config)
+        if len(profile.data) > 0:
+            _insert_ssa_profile(e_r, profile, config=config)
 
     for profile in snowprofile.hardness_profiles:
-        _insert_hardness_profile(e_r, profile, config=config)
+        if len(profile.data) > 0:
+            _insert_hardness_profile(e_r, profile, config=config)
 
     for profile in snowprofile.strength_profiles:
-        _insert_strength_profile(e_r, profile, config=config)
+        if len(profile.data) > 0:
+            _insert_strength_profile(e_r, profile, config=config)
 
     for profile in snowprofile.impurity_profiles:
-        _insert_impurity_profile(e_r, profile, config=config)
+        if len(profile.data) > 0:
+            _insert_impurity_profile(e_r, profile, config=config)
 
     if len(snowprofile.stability_tests) > 0:
         e_stb = ET.SubElement(e_r, f'{ns}stbTests')
@@ -565,10 +572,12 @@ def write_caaml6_xml(snowprofile, filename, version='6.0.5', indent=False):
             _insert_stb_test(e_stb, stbt, config=config)
 
     for profile in snowprofile.other_scalar_profiles:
-        _insert_otherscalar_profile(e_r, profile, config=config)
+        if len(profile.data) > 0:
+            _insert_otherscalar_profile(e_r, profile, config=config)
 
     for profile in snowprofile.other_vectorial_profiles:
-        _insert_othervectorial_profile(e_r, profile, config=config)
+        if len(profile.data) > 0:
+            _insert_othervectorial_profile(e_r, profile, config=config)
 
     # - Additional data
     _append_additional_data(e_r, snowprofile.profile_additional_data)

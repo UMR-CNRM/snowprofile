@@ -53,7 +53,7 @@ def plot_simple(sp,
                                    sharey=True,
                                    gridspec_kw={'wspace': 0.2, 'bottom': 0.22, 'top': 0.92})
 
-    if sp.stratigraphy_profile is not None:
+    if sp.stratigraphy_profile is not None and len(sp.stratigraphy_profile.data) > 0:
         plot_utils.plot_strati_profile(ax2, sp.stratigraphy_profile,
                                        ylabel=None)
 
