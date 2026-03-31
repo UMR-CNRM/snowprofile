@@ -124,18 +124,20 @@ def read_mf_bdclim(numposte, date, db_config={}):
 
     sp = SnowProfile(
         id=f'numposte{numposte}-{date.strftime("%Y%m%d%H%M")}',
-        profile_comment=metadata['comment'],
+        comment=metadata['comment'],
         profile_depth=metadata['totdepth'],
         profile_swe=metadata['lwc'],
         location=loc,
         time=time,
-        weather=Weather(cloudiness=metadata['ww'],
+        weather=Weather(cloudiness=metadata['cloudiness'],
+                        precipitation=metadata['precipitation'],
                         air_temperature=float(metadata['t']) if metadata['t'] is not None else None),
         observer=observer,
         stratigraphy_profile=s,
         density_profiles=d,
         hardness_profiles=r,
         temperature_profiles=t,
+        snow_transport='Drifting snow' if metadata['snow_transport'] is True else None,
         lwc_profiles=lwc)
 
     return sp
@@ -342,11 +344,18 @@ def _get_metadata_obs(conn, numposte, date):
     comment = "{}\n{}".format(data[4] if data[4] is not None else '',
                               data[5] if data[5] is not None else '')
 
+    ww = _correspWWSkyCond[data[1]] if data[1] is not None and data[1] in _correspWWSkyCond else None
+    if ww is not None:
+        print(ww)
+        ww = {'cloudiness': ww[0], 'precipitation': ww[1], 'snow_transport': ww[2]}
+    else:
+        ww = {}
+
     r = {'t': data[0],
-         'ww': _correspWWSkyCond[data[1]] if data[1] is not None and data[1] in _correspWWSkyCond else None,
          'totdepth': int(data[2]) / 100 if data[2] is not None else None,
          'lwc': int(data[3]) if data[3] is not None else None,
          'comment': comment,
+         **ww
          }
     return r
 
@@ -451,9 +460,14 @@ _correspLwc = {
     5: 'S',
 }
 
-_correspWWSkyCond = {
-    0: 'CLR',
-    1: 'BKN',
-    4: 'X',
-    9: 'OVC',
+_correspWWSkyCond = {  # cloudiness, precipitation, snow transport
+    0: ['CLR', 'Nil', None],  # RAS
+    1: ['BKN', 'Nil', None],  # Nuageux à couvert (>4/8)
+    2: [None, 'Nil', None],   # Vent
+    3: [None, 'Nil', True],   # Chasse-neige (au ras du sol ou en volutes)
+    4: ['X', 'Nil', None],    # Brouillard
+    6: [None, 'RA', None],    # Pluie
+    7: [None, 'SN', None],    # Neige
+    9: [None, None, None],    # Orage
+    # -9 : Type de temps inconnu
 }
