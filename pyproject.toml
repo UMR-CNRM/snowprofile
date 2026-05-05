@@ -38,6 +38,17 @@ tests = [
 plots = [
     'matplotlib'
     ]
+db = [
+    'psycopg2'
+    ]
+all = [
+    'sphinx',
+    'autodoc_pydantic',
+    'pytest',
+    'lxml',
+    'matplotlib',
+    'psycopg2'
+    ]
 
 [tool.setuptools.packages.find]
 where = ["src"]
