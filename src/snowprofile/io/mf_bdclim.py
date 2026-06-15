@@ -63,7 +63,7 @@ def read_mf_bdclim(numposte, date, db_config={}):
         longitude=metadata_poste['lon'],
         elevation=metadata_poste['elevation'],
         slope=metadata_poste['slope'],
-        aspect=metadata_poste['aspect'])
+        aspect=int(metadata_poste['aspect']))
 
     # Stratigraphy
     s = Stratigraphy(data={
