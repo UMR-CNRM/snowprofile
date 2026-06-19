@@ -19,11 +19,18 @@ To quit the virtual environment, use the ``deactivate`` command.
 Install for users
 ^^^^^^^^^^^^^^^^^
 
-Users can install the ``snowprofile`` package with pip :
+Users can install the ``snowprofile`` package with pip:
 
 .. code-block:: bash
 
    pip install snowprofile
+
+Note that some functionnalities require optional dependencies. If you are unsure, you can install all optional dependencies with:
+
+.. code-block:: bash
+
+   pip install snowprofile[all]
+
 
 Install for developpers
 ^^^^^^^^^^^^^^^^^^^^^^^
